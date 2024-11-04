@@ -27,7 +27,6 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.FrameLayout
-import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -41,6 +40,8 @@ import com.applovin.sdk.AppLovinMediationProvider
 import com.applovin.sdk.AppLovinSdk
 import com.applovin.sdk.AppLovinSdkInitializationConfiguration
 import com.facebook.FacebookSdk
+import com.facebook.appevents.AppEventsConstants
+import com.facebook.appevents.AppEventsLogger
 import com.facebook.applinks.AppLinkData
 import com.google.firebase.Firebase
 import com.google.firebase.remoteconfig.ConfigUpdate
@@ -159,6 +160,8 @@ class MainActivity : AppCompatActivity(), MaxAdViewAdListener {
                 }
             }
         }
+
+
         try {
             firebaseRemoteConfig = Firebase.remoteConfig
             val configSettings = remoteConfigSettings {
@@ -227,6 +230,8 @@ class MainActivity : AppCompatActivity(), MaxAdViewAdListener {
         val elapsedTime = currentTime - lastAdShownTime
 
         if (elapsedTime >= adShowInterval) {
+            val logger = AppEventsLogger.newLogger(applicationContext)
+            logger.logEvent(AppEventsConstants.EVENT_NAME_ACHIEVED_LEVEL)
             Log.e("TAG", "${elapsedTime.toMinutes()} -> ${lastAdShownTime.toMinutes()}")
             if (interstitialAd.isReady) {
                 interstitialAd.showAd(INTERSTITIAL_KEY)
@@ -306,6 +311,7 @@ class MainActivity : AppCompatActivity(), MaxAdViewAdListener {
 
             if (sharedPreferences.getBoolean(ISINTERSHOW, false) && url!!.contains("/free")///wallet
             ) {
+
                 showAdIfReady()
                 Log.e("TAG", "INTERSTITIAL Is ready -> $url")
             }
